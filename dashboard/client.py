@@ -5,7 +5,7 @@ import pandas as pd
 import plotly.graph_objects as go
 import streamlit as st
 
-API_URL = os.getenv("API_URL", "http://localhost:8000").rstrip("/")
+API_URL = os.getenv("API_URL", "http://localhost:8001").rstrip("/")
 
 # Validated reference data-viz palette: categorical slots 1-3, de-emphasis gray, diverging poles, chart ink.
 SERIES = ["#2a78d6", "#eb6834", "#1baf7a"]
@@ -26,7 +26,9 @@ def _request(method: str, path: str, **kwargs):
     try:
         response = httpx.request(method, f"{API_URL}{path}", timeout=90, **kwargs)
     except httpx.HTTPError as exc:
-        raise APIError(f"Cannot reach the API at {API_URL}. Start it with `uvicorn app.main:app` in backend/. ({exc})") from exc
+        raise APIError(
+            f"Cannot reach the API at {API_URL}. Start it from backend/ with `uvicorn app.main:app --port 8001`. ({exc})"
+        ) from exc
     if response.is_error:
         try:
             detail = response.json().get("detail", response.text)
